@@ -1,16 +1,4 @@
-module Todo (
-    -- Task,
-    -- Todo,
-    -- completeTask,
-    -- createTask,
-    -- replaceTask,
-    -- removeTask,
-    -- showTasks,
-    -- showTasksByDate,
-    -- showTask,
-    -- showCompletedTasks,
-    -- showDueTasks
-) where
+module Todo where
 
 data Task = Task {
     description :: String,
@@ -29,11 +17,78 @@ completeTask description (Task desc date done:todos)
     | desc == description = (Task desc date True) : todos
     | otherwise = (Task desc date done) : (completeTask description todos)
 
-createTask :: Description -> Date -> Todo -> Todo
-createTask description date todo = (Task description date False) : todo
+insertTask :: Task -> Todo -> Todo
+insertTask task todo = task : todo
+
+createTask :: Description -> Date -> Task
+createTask description date = Task description date False
 
 modifyTask :: Description -> Task -> Todo -> Todo
 modifyTask _ _ [] = []
 modifyTask desc newTask (task : tasks)
     | desc == description task = newTask : tasks
     | otherwise = task : (modifyTask desc newTask tasks)
+
+main = do
+    loop "help" []
+
+loop :: String -> Todo -> IO ()
+loop "help" todo = do
+    putStrLn helpMsg
+    command <- readCommand
+    loop command todo
+loop "exit" todo = do
+    putStrLn "Goodbye!! Remember your TODO's"
+    return ()
+loop "insert" todo = do
+    task <- readTask
+    command <- readCommand
+    loop command $ insertTask task todo
+loop "complete" todo = do
+    description <- readDescription
+    command <- readCommand
+    loop command $ completeTask description todo
+loop "modify" todo = do
+    description <- readDescription
+    task <- readTask
+    command <- readCommand
+    loop command $ modifyTask description task todo
+loop "debug" todo = do -- TODO: Remove this command
+    putStrLn $ show todo
+    command <- readCommand
+    loop command todo
+loop _ todo = do
+    putStrLn "Incorrect command"
+    command <- readCommand
+    loop command todo
+
+readDescription :: IO String
+readDescription = do
+    putStr "Description (id) <- "
+    getLine
+
+readDate :: IO String
+readDate = do
+    putStr "Date <- "
+    getLine
+
+readTask :: IO Task
+readTask = do
+    description <- readDescription
+    date <- readDate
+    return $ createTask description date
+
+readCommand :: IO String
+readCommand = do
+    putStr "Command -> "
+    getLine
+
+helpMsg :: String
+helpMsg = unlines [
+    "insert",
+    "\t - Creates and inserts a Task",
+    "complete",
+    "\t - Marks task as completed",
+    "replaceTask",
+    "\t - Replaces contents of task"
+    ]
