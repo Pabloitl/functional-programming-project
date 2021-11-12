@@ -17,6 +17,12 @@ completeTask description (Task desc date done:todos)
     | desc == description = (Task desc date True) : todos
     | otherwise = (Task desc date done) : (completeTask description todos)
 
+incompleteTask :: Description -> Todo -> Todo
+incompleteTask _ [] = []
+incompleteTask description (Task desc date done:todos)
+    | desc == description = (Task desc date False) : todos
+    | otherwise = (Task desc date done) : (completeTask description todos)
+
 insertTask :: Task -> Todo -> Todo
 insertTask task todo = task : todo
 
@@ -48,6 +54,10 @@ loop "complete" todo = do
     description <- readDescription
     command <- readCommand
     loop command $ completeTask description todo
+loop "incomplete" todo = do
+    description <- readDescription
+    command <- readCommand
+    loop command $ incompleteTask description todo
 loop "modify" todo = do
     description <- readDescription
     task <- readTask
@@ -85,10 +95,14 @@ readCommand = do
 
 helpMsg :: String
 helpMsg = unlines [
+    "help",
+    "\t - Show existing commands and descriptions",
     "insert",
     "\t - Creates and inserts a Task",
     "complete",
-    "\t - Marks task as completed",
-    "replaceTask",
-    "\t - Replaces contents of task"
+    "\t - Marks task as done",
+    "incomplete",
+    "\t - Marks task as incomplete",
+    "modify",
+    "\t - modifies contents of task"
     ]
