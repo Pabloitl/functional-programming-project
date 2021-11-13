@@ -35,6 +35,19 @@ modifyTask desc newTask (task : tasks)
     | desc == description task = newTask : tasks
     | otherwise = task : (modifyTask desc newTask tasks)
 
+showTaskByDescription::Description -> Todo ->Todo
+showTaskByDescription _ [] = []
+showTaskByDescription desc (Task description date completed:todos)
+    | desc == description = (Task description date completed) : (showTaskByDescription desc todos)
+    | otherwise = (showTaskByDescription desc todos)
+
+
+showCompletedTask::Todo ->  Todo
+showCompletedTask [] = []
+showCompletedTask (Task description date completed : todos)
+  | completed == True = (Task description date completed) : (showCompletedTask todos)
+  | otherwise = (showCompletedTask todos)
+
 main = do
     loop "help" []
 
