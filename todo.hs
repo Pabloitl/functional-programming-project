@@ -13,9 +13,9 @@ type Todo = [Task]
 
 completeTask :: Description -> Todo -> Todo
 completeTask _ [] = []
-completeTask description (Task desc date done:todos)
-    | desc == description = (Task desc date True) : todos
-    | otherwise = (Task desc date done) : (completeTask description todos)
+completeTask description (Task desc date done:restantes)
+    | desc == description = (Task desc date True) : restantes
+    | otherwise = (Task desc date done) : (completeTask description restantes)
 
 incompleteTask :: Description -> Todo -> Todo
 incompleteTask _ [] = []
@@ -35,18 +35,17 @@ modifyTask desc newTask (task : tasks)
     | desc == description task = newTask : tasks
     | otherwise = task : (modifyTask desc newTask tasks)
 
-showTaskByDescription::Description -> Todo ->Todo
-showTaskByDescription _ [] = []
-showTaskByDescription desc (Task description date completed:todos)
-    | desc == description = (Task description date completed) : (showTaskByDescription desc todos)
-    | otherwise = (showTaskByDescription desc todos)
+filterTaskByDescription::Description -> Todo ->Todo
+filterTaskByDescription _ [] = []
+filterTaskByDescription desc (Task description date completed:todos)
+    | desc == description = (Task description date completed) : (filterTaskByDescription desc todos)
+    | otherwise = (filterTaskByDescription desc todos)
 
-
-showCompletedTask::Todo ->  Todo
-showCompletedTask [] = []
-showCompletedTask (Task description date completed : todos)
-  | completed == True = (Task description date completed) : (showCompletedTask todos)
-  | otherwise = (showCompletedTask todos)
+filterCompletedTasks::Todo ->  Todo
+filterCompletedTasks [] = []
+filterCompletedTasks (Task description date completed : todos)
+  | completed == True = (Task description date completed) : (filterCompletedTasks todos)
+  | otherwise = (filterCompletedTasks todos)
 
 main = do
     loop "help" []
@@ -80,6 +79,15 @@ loop "debug" todo = do -- TODO: Remove this command
     putStrLn $ show todo
     command <- readCommand
     loop command todo
+loop "show completed tasks" todo = do
+    putStrLn $ show todo
+    command <- readCommand
+    loop command $ filterCompletedTasks todo
+loop "show tasks by description" todo = do
+    description <- readDescription
+    command <- readCommand
+    putStrLn $ show todo
+    loop command $ filterTaskByDescription description todo  
 loop _ todo = do
     putStrLn "Incorrect command"
     command <- readCommand
@@ -117,5 +125,9 @@ helpMsg = unlines [
     "incomplete",
     "\t - Marks task as incomplete",
     "modify",
-    "\t - modifies contents of task"
+    "\t - modifies contents of task",
+     "Show completed tasks",
+    "\t - shows completed tasks",
+    "show taks by description",
+    "\t - Shows tasks by description"
     ]
