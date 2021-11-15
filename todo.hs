@@ -35,6 +35,13 @@ modifyTask desc newTask (task : tasks)
     | desc == description task = newTask : tasks
     | otherwise = task : (modifyTask desc newTask tasks)
 
+showTasks :: Todo -> IO ()
+showTasks [] =do
+    return ()
+showTasks (task:todo)= do
+    putStrLn $ show task
+    showTasks todo
+
 main = do
     loop "help" []
 
@@ -63,8 +70,8 @@ loop "modify" todo = do
     task <- readTask
     command <- readCommand
     loop command $ modifyTask description task todo
-loop "debug" todo = do -- TODO: Remove this command
-    putStrLn $ show todo
+loop "show all" todo = do
+    showTasks todo
     command <- readCommand
     loop command todo
 loop _ todo = do
@@ -104,5 +111,7 @@ helpMsg = unlines [
     "incomplete",
     "\t - Marks task as incomplete",
     "modify",
-    "\t - modifies contents of task"
+    "\t - modifies contents of task",
+    "show all",
+    "\t - show all the tasks"
     ]
