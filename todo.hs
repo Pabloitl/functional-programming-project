@@ -13,9 +13,9 @@ type Todo = [Task]
 
 completeTask :: Description -> Todo -> Todo
 completeTask _ [] = []
-completeTask description (Task desc date done:restantes)
-    | desc == description = (Task desc date True) : restantes
-    | otherwise = (Task desc date done) : (completeTask description restantes)
+completeTask description (Task desc date done:todos)
+    | desc == description = (Task desc date True) : todos
+    | otherwise = (Task desc date done) : (completeTask description todos)
 
 incompleteTask :: Description -> Todo -> Todo
 incompleteTask _ [] = []
