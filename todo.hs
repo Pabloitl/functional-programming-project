@@ -93,11 +93,11 @@ loop "show all" todo = do
     showTasks todo
     command <- readCommand
     loop command todo
-loop "show by date" todo = do
-    date <- readDate
-    showTaskByDate date todo
-    command <- readCommand
-    loop command todo
+--loop "show by date" todo = do
+--    date <- readDate
+--    showTaskByDate date todo
+--    command <- readCommand
+--    loop command todo
 loop "remove" todo = do
     description <- readDescription
     command <- readCommand
